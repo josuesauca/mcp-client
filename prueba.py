@@ -12,8 +12,8 @@ import json
 mcp = FastMCP("WebInfoExtractor")
 
 # Configuración del servidor SMTP
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 465
+SMTP_SERVER = "server.smtp.com"
+SMTP_PORT = 111
 EMAIL_ADDRESS = "prueba@gmail.com"
 EMAIL_PASSWORD = "prueba123"
 
@@ -125,9 +125,8 @@ from email.mime.multipart import MIMEMultipart
 
 # Función para enviar correo (sin cambios)
 def send_email(to_email: str, subject: str, body: str) -> str:
-    SMTP_SERVER = "smtp.gmail.com"
-    #SMTP_PORT = 587
-    SMTP_PORT = 465
+    SMTP_SERVER = "server.smtp.com"
+    SMTP_PORT = 111
     EMAIL_ADDRESS = "prueba@gmail.com"
     EMAIL_PASSWORD = "prueba123"
 
