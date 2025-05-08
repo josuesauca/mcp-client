@@ -1,0 +1,13 @@
+{
+    "mcpServers": {
+        "weather": {
+            "command": "D:\\Respaldo\\.local\\bin\\uv",
+            "args": [
+                "--directory",
+                "D:\\Respaldo\\weather",
+                "run",
+                "prueba.py"
+            ]
+        }
+    }
+}
