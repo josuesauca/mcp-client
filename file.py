@@ -8,6 +8,9 @@ import time
 from fpdf import FPDF
 from docx import Document
 import json
+import sys
+
+
 
 # Inicializar servidor MCP
 mcp = FastMCP("WikipediaContentProcessor")
@@ -17,6 +20,10 @@ def clean_text(text):
     # Elimina caracteres Unicode problemáticos y fuera de rango
     return ''.join(char for char in text if ord(char) < 256)
 
+def log(message):
+    print(message, file=sys.stderr)
+
+
 # --- Herramienta: Extraer contenido web de Wikipedia ---
 @mcp.tool()
 def fetch_wikipedia_content(url: str) -> dict:
@@ -24,14 +31,13 @@ def fetch_wikipedia_content(url: str) -> dict:
         edge_options = EdgeOptions()
         edge_options.add_argument("--start-maximized")
         driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=edge_options)
-        print("🌐 Abriendo navegador...")
         driver.get(url)
         time.sleep(3)  # Esperar a que cargue la página
 
         html = driver.page_source
         soup = BeautifulSoup(html, "html.parser")
 
-        print("📥 Extrayendo contenido de Wikipedia...")
+        print("Extrayendo contenido de Wikipedia...")
 
         # Buscar el contenedor principal de contenido
         content_div = soup.find("div", {"id": "mw-content-text"})
@@ -43,7 +49,7 @@ def fetch_wikipedia_content(url: str) -> dict:
                     paragraphs.append(clean_text(text))
             return {"status": "ok", "content": paragraphs}
         else:
-            return {"status": "error", "message": "⚠️ No se encontró el contenedor de contenido."}
+            return {"status": "error", "message": "No se encontró el contenedor de contenido."}
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -61,7 +67,6 @@ def show_summary(content: list) -> dict:
 @mcp.tool()
 def save_to_pdf(content: list, filename: str = "contenido.pdf") -> dict:
     try:
-        print(f"📄 Guardando PDF como '{filename}'...")
 
         pdf = FPDF()
         pdf.add_page()
@@ -77,7 +82,7 @@ def save_to_pdf(content: list, filename: str = "contenido.pdf") -> dict:
             pdf.ln(5)
 
         pdf.output(filename)
-        return {"status": "ok", "message": f"✅ PDF guardado en '{filename}'"}
+        return {"status": "ok", "message": f"PDF guardado en '{filename}'"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -85,7 +90,6 @@ def save_to_pdf(content: list, filename: str = "contenido.pdf") -> dict:
 @mcp.tool()
 def save_to_word(content: list, filename: str = "contenido.docx") -> dict:
     try:
-        print(f"📘 Guardando archivo de Word como '{filename}'...")
 
         doc = Document()
         doc.add_heading('Contenido Recopilado', level=1)
@@ -94,7 +98,7 @@ def save_to_word(content: list, filename: str = "contenido.docx") -> dict:
             doc.add_paragraph(paragraph)
 
         doc.save(filename)
-        return {"status": "ok", "message": f"✅ Archivo de Word guardado en '{filename}'"}
+        return {"status": "ok", "message": f"Archivo de Word guardado en '{filename}'"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -122,5 +126,5 @@ def process_wikipedia_content(url: str) -> str:
 
 # --- Iniciar servidor MCP ---
 if __name__ == "__main__":
-    print("🚀 Iniciando servidor MCP para procesar contenido de Wikipedia...")
+    print("Iniciando servidor MCP...")
     mcp.run(transport='stdio')
